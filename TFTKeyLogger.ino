@@ -70,6 +70,8 @@ uint16_t endTextBox = 40;
 String pass = "";
 int mode = 1000;
 String alert = "";
+String passKey = "7234";
+bool trick = true;
 void setup() {
   initlz();
 
@@ -218,7 +220,7 @@ void firstScreenInput() {
     mode = 9;
   }
   // 0 Zone
-  else if (xpos > 227 && xpos < 248 && ypos > 13 && ypos < 58) {
+  else if (xpos > 227 && xpos < 246 && ypos > 13 && ypos < 58) {
     mode = 0;
   }
 
@@ -226,7 +228,7 @@ void firstScreenInput() {
   else if (xpos > 206 && xpos < 225 && ypos > 20 && ypos < 65) {
     mode = 11;
   }
-  else if (/*enter zone*/) {
+  else if (/*enter zone*/xpos > 246 && xpos < 264 && ypos > 7 && ypos < 45) {
     mode = 12;
   }
 
@@ -262,9 +264,46 @@ void firstScreenInput() {
 
 
     case 12:
+
+      if (pass == passKey) {
+        tft.fillScreen(BLACK);
+        tft.fillRect(46, 140, 140, 50, RED);
+
+        while (trick) {
+
+          alert = "Welcome";
+
+
+          tft.setTextSize(3);
+          tft.setTextColor(WHITE, RED);
+          tft.setCursor(tft.width() / 2 - ((alert.length() / 2) * 21), tft.height() / 2 - 8);
+          tft.print(alert);
+
+        }
+        tft.fillScreen(BLACK);
+      }
+
+      
+      textBox();
+      keyPad();
+      mode = 10;
+
+      if (pass != passKey) {
+        alert = "Incorrect Password";
+        tft.setCursor(tft.width() / 2 - ((alert.length() / 2) * 6), textBoxStart + 28);
+        tft.setTextSize(0);
+        tft.setTextColor(RED, BLACK);
+        tft.print(alert);
+        if (xpos > 206 && xpos < 225 && ypos > 20 && ypos < 65) {
+          pass = "";
+          Serial.println("Cleared");
+          textBox();
+          keyPad();
+          mode = 10;
+        }
+      }
+
       break;
-
-
 
 
     case 17:
