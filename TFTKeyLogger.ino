@@ -17,9 +17,12 @@
 
 #include <Adafruit_GFX.h>
 #include <MCUFRIEND_kbv.h>
+#include <Servo.h>
 
+Servo myServo;
 
 #include "colors.h"
+#include <string.h>
 
 MCUFRIEND_kbv tft;
 
@@ -70,9 +73,26 @@ uint16_t endTextBox = 40;
 String pass = "";
 int mode = 1000;
 String alert = "";
-String passKey = "7234";
+//String passKey = "7234";
 bool trick = true;
+String nameSpit = "";
+
+struct userProfile {
+  String userName;
+  String passWord;
+};
+
+
+struct userProfile user1;
+struct userProfile user2;
+
+int count = 0;
 void setup() {
+  user1.userName = "Barnabas";
+  user1.passWord = "7234";
+
+  user2.userName = "Jessica";
+  user2.passWord = "1234";
   initlz();
 
   formal();
@@ -83,6 +103,9 @@ void loop() {
   // put your main code here, to run repeatedly:
   firstScreenInput();
 
+
+
+  
 }
 
 
@@ -265,9 +288,14 @@ void firstScreenInput() {
 
     case 12:
 
-      if (pass == passKey) {
+      if (pass == user1.passWord  || pass == user2.passWord) {
         tft.fillScreen(BLACK);
         tft.fillRect(46, 140, 140, 50, RED);
+        //myServo.attach(10);
+        
+
+        if (pass == user1.passWord) nameSpit = user1.userName;
+        else if (pass == user2.passWord) nameSpit = user2.userName;
 
         while (trick) {
 
@@ -278,17 +306,31 @@ void firstScreenInput() {
           tft.setTextColor(WHITE, RED);
           tft.setCursor(tft.width() / 2 - ((alert.length() / 2) * 21), tft.height() / 2 - 8);
           tft.print(alert);
+          tft.setTextColor(WHITE, BLUE);
+          tft.setCursor(tft.width()- ((nameSpit.length()  * 18) + 18), tft.height() / 2 + 20);
+          tft.print(nameSpit);
+
+          count ++;
+          tft.setTextColor(WHITE, GREEN);
+          tft.setCursor(0, 0);
+          tft.print(count);
+          delay(1000);
+          if(count >= 15){
+            tft.fillScreen(BLACK);
+            
+            tft.setTextColor(WHITE, BLACK);
+            rest();
+            mode = 10;
+            pass = "";
+            break;
+          }
+
+          
 
         }
-        tft.fillScreen(BLACK);
+        
       }
-
-      
-      textBox();
-      keyPad();
-      mode = 10;
-
-      if (pass != passKey) {
+       else if (pass != user1.passWord || pass != user2.passWord) {
         alert = "Incorrect Password";
         tft.setCursor(tft.width() / 2 - ((alert.length() / 2) * 6), textBoxStart + 28);
         tft.setTextSize(0);
@@ -302,6 +344,7 @@ void firstScreenInput() {
           mode = 10;
         }
       }
+      
 
       break;
 
@@ -338,8 +381,15 @@ void firstScreenInput() {
 
   tft.setTextColor(WHITE, BLACK);
   tft.setTextSize(0);
-  tft.setCursor(90, 0);
+  tft.setCursor(98, 0);
   tft.print(pass.length());
   delay(200);
 }
+
+void rest(){
+  instructions();
+  textBox();
+  keyPad();
+  
+ }
 
